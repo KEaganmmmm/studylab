@@ -1,0 +1,1136 @@
+
+<!DOCTYPE html>
+<html lang="="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study Tool</title>
+  <style>
+button {
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  background-color: #2c2c2c;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+button:hover {
+  background-color: #444;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+}
+button:active {
+  transform: scale(0.97);
+  background-color: #666;
+}
+    :root { --bg-color: #121212; }
+    body {
+      margin: 0; padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: white;
+      transition: background-color 0.5s ease;
+    }
+    .tab-buttons {
+      display: flex; justify-content: center; background-color: var(--bg-color);
+    }
+    .tab-buttons button {
+      flex: 1; padding: 0.75rem; border: none;
+      background-color: var(--bg-color); color: white; font-size: 1rem;
+      cursor: pointer; transition: background 0.3s, transform 0.2s;
+    }
+    .tab-buttons button:hover { background-color: #333; transform: scale(1.05); }
+    .tab-buttons button:active { transform: scale(0.98); }
+    .tab-content { display: none; padding: 1rem; max-width: 600px; margin: auto; }
+    .tab-content.active { display: block; }
+    .calculator input, .calculator button {
+      width: 100%; margin: 0.2rem 0; padding: 0.5rem; font-size: 1rem; border-radius: 5px;
+    }
+    .calc-buttons {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.3rem;
+    }
+    textarea {
+      width: 100%; height: 100px;
+      background: #1e1e1e; color: white; border: 1px solid #555; padding: 8px;
+      resize: vertical; border-radius: 4px;
+    }
+    .question-box, .answer-box {
+  background-color: var(--bg-color);
+      background: #1a1a1a; padding: 1rem; margin-top: 1rem; border-radius: 6px;
+    }
+    .quote { text-align: center; font-style: italic; padding: 1rem; color: #aaa; }
+    input[type="color"], input[type="text"] { margin: 0.5rem; padding: 0.4rem; border-radius: 4px; }
+@media (max-width: 600px) {
+  .tab-buttons button {
+    font-size: 0.9rem;
+    padding: 0.5rem;
+  }
+  .tab-content {
+    padding: 0.8rem;
+  }
+  .calculator input, .calculator button {
+    font-size: 0.9rem;
+    padding: 0.4rem;
+  }
+  .calc-buttons {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .controls label {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+  textarea {
+    height: 80px;
+  }
+}
+.question-box, .answer-box {
+  background-color: var(--bg-color) !important;
+}
+.question-box input, .question-box select,
+.answer-box input, .answer-box select,
+.answer-box button, .question-box button {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+.question-box input:focus, .answer-box input:focus,
+.question-box select:focus, .answer-box select:focus {
+  outline: none;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+.question-box label,
+.question-box select {
+  color: black !important;
+  background-
+  color: white !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.question-box select {
+  color: black !important;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  appearance: auto;
+}
+/* Modern toggle switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+input:checked + .slider {
+  background-color: #4caf50;
+}
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+</style>
+
+<style>
+  @media (max-width: 768px) {
+    #color-picker-wrapper.centered-picker {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 1rem auto;
+      width: 100%;
+    }
+    #color-picker-wrapper.centered-picker input,
+    #color-picker-wrapper.centered-picker span {
+      margin: 0.3rem auto;
+      text-align: center;
+    }
+  }
+</style>
+
+
+<style>
+  .color-picker-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+  }
+  .color-picker-inner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+</style>
+
+
+<style>
+  
+#calculator {
+  max-width: 240px;
+  margin: 0.5rem auto;
+  padding: 8px;
+  background-color: #222;
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+  #calculator button {
+  padding: 6px;
+  font-size: 0.75rem;
+  border-radius: 4px;
+}
+  #calculator input {
+  grid-column: span 4;
+  margin-bottom: 4px;
+  font-size: 0.9rem;
+  padding: 5px;
+}
+</style>
+
+
+<style>
+  .card-box {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1rem;
+    margin: 1.5rem 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.3s, box-shadow 0.3s;
+  }
+  .card-box:hover {
+    background-color: rgba(255, 255, 255, 0.07);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+</style>
+
+
+<style>
+@media (max-width: 768px) {
+  #home-screen h1 {
+    font-size: 2rem;
+  }
+  #home-screen button {
+    font-size: 1rem !important;
+    padding: 0.6rem 1.2rem !important;
+  }
+  #credits-box, #settings-box {
+    font-size: 0.9rem;
+    margin: 0.5rem;
+  }
+}
+</style>
+
+
+<style>
+#home-screen button {
+  transition: all 0.3s ease;
+  transform: scale(1);
+  border: none;
+  border-radius: 10px;
+  padding: 0.8rem 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+#home-screen button:hover {
+  transform: scale(1.07);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+}
+#home-screen button:active {
+  transform: scale(0.95);
+  box-shadow: inset 0 3px 6px rgba(0,0,0,0.5);
+}
+</style>
+
+</head>
+<body class="no-scroll">
+
+
+
+
+<div id="home-screen" style="
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: #1a1a1a;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  z-index: 9999; color: white; font-family: 'Segoe UI', sans-serif; text-align: center;">
+  <h1 style="font-size: 3rem; margin-bottom: 2rem; font-weight: 600;">📚 StudyLab</h1>
+  <button onclick="enterApp()" style="margin: 0.5rem; font-size: 1.25rem; background: #222; color: #fff; border: 1px solid #555;">▶ Continue</button>
+  <button onclick="openSettings()" style="margin: 0.5rem; font-size: 1.25rem; background: #222; color: #fff; border: 1px solid #555;">⚙️ Settings</button>
+  
+  <button id="achievements-btn" onclick="openAchievements()" style="margin: 0.5rem; font-size: 1.25rem; background: #222; color: #fff; border: 1px solid #555;">🏆 Achievements</button>
+
+  <button onclick="openCredits()" style="margin: 0.5rem; font-size: 1.25rem; background: #222; color: #fff; border: 1px solid #555;">👤 Credits</button>
+  
+
+<div id="settings-box" style="display:none; margin:1rem; color:white;">
+  <p><b>Settings</b></p>
+  <label style="display:block; margin:0.5rem 0;">
+    <input type="checkbox" id="toggle-bg-save" checked />
+    Save background color preference
+  </label>
+  <label style="display:block; margin:0.5rem 0;">
+    <input type="checkbox" id="spacedModeToggle" />
+    Enable Spaced Repetition Mode
+  </label>
+  <label style="display:block; margin:0.5rem 0;">
+    <select id="fontSizeSelector">
+      <option value="normal">Font Size: Normal</option>
+      <option value="large">Font Size: Large</option>
+      <option value="xlarge">Font Size: Extra Large</option>
+    </select>
+  </label>
+  <button onclick="resetAllNotes()" style="margin-top: 0.5rem;">Reset All Notes</button>
+</div>
+
+
+<div id="achievements-box" style="display:none; margin:1rem; color:white; text-align:center;">
+  <p><b>Achievements</b></p>
+  <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 1rem;">
+    <div class="badge" id="badge-first" style="background:#2e2e2e;padding:1rem;border-radius:8px;width:150px;">
+      <div style="font-size:2rem;">🧪</div>
+      <strong>Science Starter</strong>
+      <p style="font-size:0.9rem;">Answer your first question</p>
+    </div>
+    <div class="badge" id="badge-notes" style="background:#2e2e2e;padding:1rem;border-radius:8px;width:150px;">
+      <div style="font-size:2rem;">✏️</div>
+      <strong>Note Taker</strong>
+      <p style="font-size:0.9rem;">Write your first note</p>
+    </div>
+    <div class="badge locked" id="badge-color" style="opacity:0.4;background:#2e2e2e;padding:1rem;border-radius:8px;width:150px;">
+      <div style="font-size:2rem;">🌈</div>
+      <strong>Customizer</strong>
+      <p style="font-size:0.9rem;">Change your background color</p>
+    </div>
+  </div>
+</div>
+
+<div id="credits-box" style="display:none; margin:1rem; color:white;">
+    <p><b>By Keagan</b><br>Lead Developer and Lead Designer</p>
+  </div>
+  
+<button onclick="startGhostChallenge()" style="margin: 0.5rem; font-size: 1.25rem; background: #222; color: #fff; border: 1px solid #555;">👻 Ghost Challenge</button>
+
+<button onclick="quitApp()" style="margin: 0.5rem; font-size: 1.25rem; background: #222; color: #fff; border: 1px solid #555;">❌ Quit</button>
+
+<div id="stats-panel" style="background: rgba(0,0,0,0.4); padding: 1rem; border-radius: 12px; color: white; margin-top: 2rem; max-width: 300px; text-align: left;">
+  <h3 style="margin-top: 0;">📊 Stats</h3>
+  <p><b>Time Played:</b> <span id="stat-time">0m</span></p>
+  <p><b>Questions Attempted:</b> <span id="stat-attempted">0</span></p>
+  <p><b>Badges Unlocked:</b> <span id="stat-badges">0</span></p>
+  <p><b>Level:</b> <span id="stat-level">1</span></p>
+</div>
+
+</div>
+<button onclick="goHome()" style="position: fixed; top: 1rem; left: 1rem; z-index: 9998;">⟵ Home</button>
+
+  <div class="controls">
+    <label>Background: <input id="bgColor" type="color" value="#121212" /></label>
+    <label>Hex: <input id="hexInput" type="text" placeholder="#121212" /></label>
+  </div>
+  <label style="display:flex; align-items:center; gap:0.5rem; margin: 0.5rem auto; justify-content: center;">
+    <input type="checkbox" id="bgSaveToggle" checked />
+    Save background color
+  </label>
+</div>
+<div class="quote">"The beautiful thing about learning is that nobody can take it away from you." – B.B. King</div>
+  <div class="tab-buttons">
+    <button onclick="showTab('physics')">Physics</button>
+    <button onclick="showTab('biology')">Biology</button>
+  </div>
+  <div id="physics" class="tab-content active">
+    <h2>Physics Study Tool</h2>
+    <div class="question-box">
+      <label>Difficulty:
+        <select id="physicsDifficulty">
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </label>
+      <button onclick="generateQuestion('physics')">Generate Question</button>
+      <p id="physics-question"></p>
+      <div class="answer-box">
+        <label>Your Answer: <input type="text" id="physics-answer"></label>
+        <button onclick="checkAnswer('physics')">Check Answer</button>
+        <button onclick="nextProblem('physics')">Next Problem</button>
+        <p id="physics-feedback"></p>
+      </div>
+    </div>
+
+<h3>Formula Sheet</h3>
+<ul>
+  <li><b>Speed</b>: v = d / t</li>
+  <li><b>Acceleration</b>: a = Δv / t</li>
+  <li><b>Force</b>: F = m × a</li>
+  <li><b>Work</b>: W = F × d</li>
+  <li><b>Kinetic Energy</b>: KE = 0.5 × m × v²</li>
+  <li><b>Potential Energy</b>: PE = m × g × h</li>
+  <li><b>Final Velocity</b>: v = u + at</li>
+  <li><b>Displacement</b>: s = ut + 0.5 × a × t²</li>
+  <li><b>Momentum</b>: p = m × v</li>
+  <li><b>Power</b>: P = W / t</li>
+  <li><b>Density</b>: ρ = m / V</li>
+</ul>
+
+<h3>Physics Constants</h3>
+<ul>
+  <li><b>g</b> (Gravitational Acceleration): 9.8 m/s²</li>
+  <li><b>c</b> (Speed of Light): 3 × 10⁸ m/s</li>
+  <li><b>h</b> (Planck's Constant): 6.626 × 10⁻³⁴ Js</li>
+  <li><b>G</b> (Gravitational Constant): 6.674 × 10⁻¹¹ Nm²/kg²</li>
+  <li><b>e</b> (Elementary Charge): 1.602 × 10⁻¹⁹ C</li>
+  <li><b>k</b> (Coulomb’s Constant): 8.99 × 10⁹ Nm²/C²</li>
+  <li><b>R</b> (Universal Gas Constant): 8.314 J/mol·K</li>
+  <li><b>Avogadro's Number</b>: 6.022 × 10²³ mol⁻¹</li>
+</ul>
+<h3>My Physics Notes</h3>
+    <textarea id="physicsNotes" placeholder="Write your physics notes here..."></textarea>
+    <div class="calculator">
+      <h3>Calculator</h3>
+      <input id="calcInput" type="text" />
+      <div class="calc-buttons">
+        <button onclick="addCalcValue('calcInput', '7')">7</button>
+        <button onclick="addCalcValue('calcInput', '8')">8</button>
+        <button onclick="addCalcValue('calcInput', '9')">9</button>
+        <button onclick="addCalcValue('calcInput', '+')">+</button>
+        <button onclick="addCalcValue('calcInput', '4')">4</button>
+        <button onclick="addCalcValue('calcInput', '5')">5</button>
+        <button onclick="addCalcValue('calcInput', '6')">6</button>
+        <button onclick="addCalcValue('calcInput', '-')">-</button>
+        <button onclick="addCalcValue('calcInput', '1')">1</button>
+        <button onclick="addCalcValue('calcInput', '2')">2</button>
+        <button onclick="addCalcValue('calcInput', '3')">3</button>
+        <button onclick="addCalcValue('calcInput', '*')">*</button>
+        <button onclick="addCalcValue('calcInput', '0')">0</button>
+        <button onclick="addCalcValue('calcInput', '.')">.</button>
+        <button onclick="calculate('calcInput')">=</button>
+        <button onclick="clearCalc('calcInput')">C</button>
+      </div>
+    </div>
+  </div>
+  <div id="biology" class="tab-content">
+    <h2>Biology Study Tool</h2>
+    <div class="question-box">
+      <label>Difficulty:
+        <select id="bioDifficulty">
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </label>
+      <button onclick="generateQuestion('biology')">Generate Question</button>
+      <p id="biology-question"></p>
+      <div class="answer-box">
+        <label>Your Answer: <input type="text" id="biology-answer"></label>
+        <button onclick="checkAnswer('biology')">Check Answer</button>
+        <button onclick="nextProblem('biology')">Next Problem</button>
+        <p id="biology-feedback"></p>
+      </div>
+    </div>
+<h3>Important Concepts</h3>
+<ul>
+  <li><b>Photosynthesis</b>: 6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂</li>
+  <li><b>Respiration</b>: C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + Energy</li>
+  <li><b>DNA</b>: Double helix structure, nucleotides (A, T, C, G)</li>
+  <li><b>Genetics</b>: Dominant/recessive traits, Punnett squares</li>
+  <li><b>Cell Structure</b>: Nucleus, mitochondria, ribosomes, etc.</li>
+</ul>
+<h3>My Biology Notes</h3>
+    <textarea id="bioNotes" placeholder="Write your biology notes here..."></textarea>
+    <div class="calculator">
+      <h3>Calculator</h3>
+      <input id="bioCalc" type="text" />
+      <div class="calc-buttons">
+        <button onclick="addCalcValue('bioCalc', '7')">7</button>
+        <button onclick="addCalcValue('bioCalc', '8')">8</button>
+        <button onclick="addCalcValue('bioCalc', '9')">9</button>
+        <button onclick="addCalcValue('bioCalc', '+')">+</button>
+        <button onclick="addCalcValue('bioCalc', '4')">4</button>
+        <button onclick="addCalcValue('bioCalc', '5')">5</button>
+        <button onclick="addCalcValue('bioCalc', '6')">6</button>
+        <button onclick="addCalcValue('bioCalc', '-')">-</button>
+        <button onclick="addCalcValue('bioCalc', '1')">1</button>
+        <button onclick="addCalcValue('bioCalc', '2')">2</button>
+        <button onclick="addCalcValue('bioCalc', '3')">3</button>
+        <button onclick="addCalcValue('bioCalc', '*')">*</button>
+        <button onclick="addCalcValue('bioCalc', '0')">0</button>
+        <button onclick="addCalcValue('bioCalc', '.')">.</button>
+        <button onclick="calculate('bioCalc')">=</button>
+        <button onclick="clearCalc('bioCalc')">C</button>
+      </div>
+    </div>
+  </div>
+<style>
+.no-scroll { overflow: hidden; height: 100vh; }
+</style>
+<script>
+let currentSubject = "physics";
+
+
+const physicsQuestions = {
+easy: [{'q': 'A 18N force is applied over 35m. What is the work done?', 'answer': '630', 'explanation': 'Work = F × d = 18 × 35 = 630 J.'}, {'q': 'A 38N force is applied over 154m. What is the work done?', 'answer': '5852', 'explanation': 'Work = F × d = 38 × 154 = 5852 J.'}, {'q': 'What is the potential energy of a 14kg object at 18m height?', 'answer': '2469.6', 'explanation': 'PE = m × g × h = 14 × 9.8 × 18 = 2469.6 J.'}, {'q': 'Calculate the force when mass is 1kg and acceleration is 9m/s².', 'answer': '9', 'explanation': 'F = m × a = 1 × 9 = 9 N.'}, {'q': 'Find the momentum of a 20kg object moving at 14m/s.', 'answer': '280', 'explanation': 'Momentum = m × v = 20 × 14 = 280 kg·m/s.'}, {'q': 'Find the momentum of a 1kg object moving at 5m/s.', 'answer': '5', 'explanation': 'Momentum = m × v = 1 × 5 = 5 kg·m/s.'}, {'q': 'Calculate the force when mass is 14kg and acceleration is 7m/s².', 'answer': '98', 'explanation': 'F = m × a = 14 × 7 = 7 N.'}, {'q': 'What is the potential energy of a 15kg object at 6m height?', 'answer': '882.0', 'explanation': 'PE = m × g × h = 15 × 9.8 × 6 = 882.0 J.'}, {'q': 'A 35N force is applied over 83m. What is the work done?', 'answer': '2905', 'explanation': 'Work = F × d = 35 × 83 = 2905 J.'}, {'q': 'What is the potential energy of a 10kg object at 22m height?', 'answer': '2156.0', 'explanation': 'PE = m × g × h = 10 × 9.8 × 22 = 2156.0 J.'}, {'q': 'Find the momentum of a 1kg object moving at 4m/s.', 'answer': '4', 'explanation': 'Momentum = m × v = 1 × 4 = 4 kg·m/s.'}, {'q': 'What is the speed of an object that travels 109m in 16s?', 'answer': '6.81', 'explanation': 'Speed = distance / time = 109 / 16 = 6.81 m/s.'}, {'q': 'What is the potential energy of a 13kg object at 4m height?', 'answer': '509.6', 'explanation': 'PE = m × g × h = 13 × 9.8 × 4 = 509.6 J.'}, {'q': 'Find the momentum of a 9kg object moving at 7m/s.', 'answer': '63', 'explanation': 'Momentum = m × v = 9 × 7 = 63 kg·m/s.'}, {'q': 'Find the momentum of a 9kg object moving at 20m/s.', 'answer': '180', 'explanation': 'Momentum = m × v = 9 × 20 = 180 kg·m/s.'}, {'q': 'What is the potential energy of a 3kg object at 19m height?', 'answer': '558.6', 'explanation': 'PE = m × g × h = 3 × 9.8 × 19 = 558.6 J.'}, {'q': 'A 33N force is applied over 119m. What is the work done?', 'answer': '3927', 'explanation': 'Work = F × d = 33 × 119 = 3927 J.'}, {'q': 'Find the momentum of a 7kg object moving at 17m/s.', 'answer': '119', 'explanation': 'Momentum = m × v = 7 × 17 = 119 kg·m/s.'}, {'q': 'Calculate the force when mass is 7kg and acceleration is 8m/s².', 'answer': '56', 'explanation': 'F = m × a = 7 × 8 = 8 N.'}, {'q': 'Calculate the force when mass is 3kg and acceleration is 4m/s².', 'answer': '12', 'explanation': 'F = m × a = 3 × 4 = 4 N.'}],
+medium: [{'q': 'Find the momentum of a 9kg object moving at 3m/s.', 'answer': '27', 'explanation': 'Momentum = m × v = 9 × 3 = 27 kg·m/s.'}, {'q': 'Calculate the force when mass is 12kg and acceleration is 2m/s².', 'answer': '24', 'explanation': 'F = m × a = 12 × 2 = 2 N.'}, {'q': 'A 45N force is applied over 48m. What is the work done?', 'answer': '2160', 'explanation': 'Work = F × d = 45 × 48 = 2160 J.'}, {'q': 'Find the momentum of a 9kg object moving at 9m/s.', 'answer': '81', 'explanation': 'Momentum = m × v = 9 × 9 = 81 kg·m/s.'}, {'q': 'Calculate the force when mass is 5kg and acceleration is 6m/s².', 'answer': '30', 'explanation': 'F = m × a = 5 × 6 = 6 N.'}, {'q': 'Calculate the force when mass is 11kg and acceleration is 8m/s².', 'answer': '88', 'explanation': 'F = m × a = 11 × 8 = 8 N.'}, {'q': 'What is the speed of an object that travels 151m in 2s?', 'answer': '75.5', 'explanation': 'Speed = distance / time = 151 / 2 = 75.5 m/s.'}, {'q': 'What is the speed of an object that travels 94m in 1s?', 'answer': '94.0', 'explanation': 'Speed = distance / time = 94 / 1 = 94.0 m/s.'}, {'q': 'What is the potential energy of a 17kg object at 26m height?', 'answer': '4331.6', 'explanation': 'PE = m × g × h = 17 × 9.8 × 26 = 4331.6 J.'}, {'q': 'Calculate the force when mass is 17kg and acceleration is 9m/s².', 'answer': '153', 'explanation': 'F = m × a = 17 × 9 = 9 N.'}, {'q': 'What is the potential energy of a 13kg object at 19m height?', 'answer': '2420.6', 'explanation': 'PE = m × g × h = 13 × 9.8 × 19 = 2420.6 J.'}, {'q': 'What is the speed of an object that travels 105m in 7s?', 'answer': '15.0', 'explanation': 'Speed = distance / time = 105 / 7 = 15.0 m/s.'}, {'q': 'What is the potential energy of a 2kg object at 24m height?', 'answer': '470.4', 'explanation': 'PE = m × g × h = 2 × 9.8 × 24 = 470.4 J.'}, {'q': 'What is the potential energy of a 17kg object at 5m height?', 'answer': '833.0', 'explanation': 'PE = m × g × h = 17 × 9.8 × 5 = 833.0 J.'}, {'q': 'Calculate the force when mass is 20kg and acceleration is 6m/s².', 'answer': '120', 'explanation': 'F = m × a = 20 × 6 = 6 N.'}],
+hard: [{'q': 'What is the potential energy of a 16kg object at 6m height?', 'answer': '940.8', 'explanation': 'PE = m × g × h = 16 × 9.8 × 6 = 940.8 J.'}, {'q': 'A 48N force is applied over 32m. What is the work done?', 'answer': '1536', 'explanation': 'Work = F × d = 48 × 32 = 1536 J.'}, {'q': 'A 48N force is applied over 72m. What is the work done?', 'answer': '3456', 'explanation': 'Work = F × d = 48 × 72 = 3456 J.'}, {'q': 'A 39N force is applied over 173m. What is the work done?', 'answer': '6747', 'explanation': 'Work = F × d = 39 × 173 = 6747 J.'}, {'q': 'What is the potential energy of a 12kg object at 15m height?', 'answer': '1764.0', 'explanation': 'PE = m × g × h = 12 × 9.8 × 15 = 1764.0 J.'}, {'q': 'Find the momentum of a 19kg object moving at 16m/s.', 'answer': '304', 'explanation': 'Momentum = m × v = 19 × 16 = 304 kg·m/s.'}, {'q': 'Find the momentum of a 20kg object moving at 2m/s.', 'answer': '40', 'explanation': 'Momentum = m × v = 20 × 2 = 40 kg·m/s.'}, {'q': 'What is the speed of an object that travels 61m in 11s?', 'answer': '5.55', 'explanation': 'Speed = distance / time = 61 / 11 = 5.55 m/s.'}, {'q': 'What is the potential energy of a 5kg object at 3m height?', 'answer': '147.0', 'explanation': 'PE = m × g × h = 5 × 9.8 × 3 = 147.0 J.'}, {'q': 'What is the potential energy of a 4kg object at 25m height?', 'answer': '980.0', 'explanation': 'PE = m × g × h = 4 × 9.8 × 25 = 980.0 J.'}, {'q': 'A 29N force is applied over 31m. What is the work done?', 'answer': '899', 'explanation': 'Work = F × d = 29 × 31 = 899 J.'}, {'q': 'What is the speed of an object that travels 109m in 16s?', 'answer': '6.81', 'explanation': 'Speed = distance / time = 109 / 16 = 6.81 m/s.'}, {'q': 'Calculate the force when mass is 8kg and acceleration is 8m/s².', 'answer': '64', 'explanation': 'F = m × a = 8 × 8 = 8 N.'}, {'q': 'Find the momentum of a 10kg object moving at 6m/s.', 'answer': '60', 'explanation': 'Momentum = m × v = 10 × 6 = 60 kg·m/s.'}, {'q': 'A 32N force is applied over 40m. What is the work done?', 'answer': '1280', 'explanation': 'Work = F × d = 32 × 40 = 1280 J.'}]
+};
+
+
+const biologyQuestions = {
+  easy: [
+    { q: "What is the powerhouse of the cell?", answer: "mitochondria", explanation: "Mitochondria produce ATP — the cell’s energy." },
+    { q: "Where does photosynthesis occur?", answer: "chloroplast", explanation: "Photosynthesis occurs in chloroplasts in plant cells." },
+    { q: "What molecule carries genetic instructions?", answer: "dna", explanation: "DNA stores and transfers genetic information." },
+    { q: "What are the basic building blocks of proteins?", answer: "amino acids", explanation: "Proteins are made of amino acids." }
+  ],
+  medium: [
+    { q: "Name the process where cells divide to form two identical cells.", answer: "mitosis", explanation: "Mitosis creates identical daughter cells." },
+    { q: "What are the four components of blood?", answer: "red cells, white cells, plasma, platelets", explanation: "Blood contains plasma, red & white cells, and platelets." },
+    { q: "What organ filters waste from the blood?", answer: "kidney", explanation: "Kidneys filter blood and produce urine." },
+    { q: "What is the function of ribosomes?", answer: "protein synthesis", explanation: "Ribosomes make proteins." }
+  ],
+  hard: [
+    { q: "Explain the path blood takes through the heart and lungs.", answer: "right atrium to lungs to left atrium", explanation: "Right atrium → lungs → left atrium → body." },
+    { q: "What structure allows gas exchange in the lungs?", answer: "alveoli", explanation: "Alveoli are tiny sacs where gas exchange occurs." },
+    { q: "Define osmosis.", answer: "movement of water across membrane", explanation: "Osmosis is water diffusion through a membrane." },
+    { q: "What is the role of enzymes?", answer: "speed up reactions", explanation: "Enzymes are biological catalysts." }
+  ]
+};
+
+let currentPhysicsQuestion = null;
+let currentBioQuestion = null;
+function showTab(tabId) {
+  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+}
+
+let lastGenTime = { physics: 0, biology: 0 };
+
+function generateQuestion(subject) {
+  const now = Date.now();
+  if (now - lastGenTime[subject] < 2000) {
+    alert("⏳ Please wait before generating another question.");
+    return;
+  }
+  lastGenTime[subject] = now;
+
+  if (subject === 'physics') {
+    const diff = document.getElementById('physicsDifficulty').value;
+    const list = physicsQuestions[diff];
+    const rand = list[Math.floor(Math.random() * list.length)];
+    unlockBadge('badge-first');
+    currentPhysicsQuestion = rand;
+    document.getElementById('physics-question').textContent = rand.q;
+  } else if (subject === 'biology') {
+    const diff = document.getElementById('bioDifficulty').value;
+    const list = biologyQuestions[diff];
+    const rand = list[Math.floor(Math.random() * list.length)];
+    unlockBadge('badge-first');
+    currentBioQuestion = rand;
+    document.getElementById('biology-question').textContent = rand.q;
+  }
+}
+
+function checkAnswer(subject) {
+  let expectedAnswers = [], explanation = "", userAnswer = "";
+  if (subject === 'physics' && currentPhysicsQuestion) {
+    expectedAnswers = Array.isArray(currentPhysicsQuestion.answer) ? currentPhysicsQuestion.answer : [currentPhysicsQuestion.answer];
+    explanation = currentPhysicsQuestion.explanation;
+    userAnswer = document.getElementById("physics-answer").value.trim().toLowerCase();
+  } else if (subject === 'biology' && currentBioQuestion) {
+    expectedAnswers = Array.isArray(currentBioQuestion.answer) ? currentBioQuestion.answer : [currentBioQuestion.answer];
+    explanation = currentBioQuestion.explanation;
+    userAnswer = document.getElementById("biology-answer").value.trim().toLowerCase();
+  }
+
+  const feedbackEl = document.getElementById(subject + "-feedback");
+  const matchFound = expectedAnswers.some(ans => userAnswer === ans || userAnswer.includes(ans));
+  if (matchFound) {
+    feedbackEl.innerHTML = "✅ <b>Correct!</b>";
+    feedbackEl.style.color = "lightgreen";
+    document.getElementById(subject + "-formula").textContent = "";
+  } else {
+    feedbackEl.innerHTML = "❌ <b>Incorrect.</b><br><i>" + explanation + "</i>";
+    feedbackEl.style.color = "red";
+    document.getElementById(subject + "-formula").textContent = explanation;
+  }
+}
+function nextProblem(subject) {
+  document.getElementById(subject + "-question").textContent = "";
+  document.getElementById(subject + "-answer").value = "";
+  document.getElementById(subject + "-feedback").textContent = "";
+  document.getElementById(subject + "-formula").textContent = "";
+}
+function calculate(id) {
+  const input = document.getElementById(id);
+  try {
+    input.value = eval(input.value);
+  } catch {
+    input.value = "Error";
+  }
+}
+function addCalcValue(id, value) {
+  document.getElementById(id).value += value;
+}
+function clearCalc(id) {
+  document.getElementById(id).value = "";
+}
+document.getElementById("bgColor").addEventListener("input", e => updateBackground(e.target.value));
+document.getElementById("hexInput").addEventListener("input", e => updateBackground(e.target.value));
+function updateBackground(color) {
+  document.documentElement.style.setProperty('--bg-color', color);
+  document.getElementById("bgColor").value = color;
+  document.getElementById("hexInput").value = color;
+}
+// Save notes to localStorage
+document.getElementById("physicsNotes").addEventListener("input", e => localStorage.setItem("physicsNotes", e.target.value));
+document.getElementById("bioNotes").addEventListener("input", e => localStorage.setItem("bioNotes", e.target.value));
+document.getElementById("physicsNotes").value = localStorage.getItem("physicsNotes") || "";
+document.getElementById("bioNotes").value = localStorage.getItem("bioNotes") || "";
+const bgSaveToggle = document.getElementById("bgSaveToggle");
+function updateBackground(color) {
+  document.documentElement.style.setProperty('--bg-color', color);
+  document.getElementById("bgColor").value = color;
+  document.getElementById("hexInput").value = color;
+  if (bgSaveToggle.checked) {
+    localStorage.setItem("savedBgColor", color);
+  }
+}
+bgSaveToggle.addEventListener("change", () => {
+  if (!bgSaveToggle.checked) {
+    localStorage.removeItem("savedBgColor");
+  } else {
+    const color = document.getElementById("bgColor").value;
+    localStorage.setItem("savedBgColor", color);
+  }
+});
+// Load saved background color if toggle is on
+const savedColor = localStorage.getItem("savedBgColor");
+if (savedColor) {
+  document.documentElement.style.setProperty('--bg-color', savedColor);
+  document.getElementById("bgColor").value = savedColor;
+  document.getElementById("hexInput").value = savedColor;
+  bgSaveToggle.checked = true;
+} else {
+  bgSaveToggle.checked = false;
+}
+
+// Font size control
+document.getElementById("fontSizeSelector").addEventListener("change", e => {
+  const value = e.target.value;
+  document.body.style.fontSize = value === "normal" ? "1rem" : value === "large" ? "1.25rem" : "1.5rem";
+});
+
+// Reset all notes
+function resetAllNotes() {
+  localStorage.removeItem("physicsNotes");
+  localStorage.removeItem("bioNotes");
+  document.getElementById("physicsNotes").value = "";
+  document.getElementById("bioNotes").value = "";
+  alert("All notes have been reset.");
+}
+
+// Placeholder toggle for spaced repetition mode (future logic can use this flag)
+document.getElementById("spacedModeToggle").addEventListener("change", e => {
+  const enabled = e.target.checked;
+  localStorage.setItem("spacedRepetition", enabled);
+});
+
+
+
+function openFullAchievements() {
+  const container = document.getElementById("badge-grid");
+  if (!container) return;
+
+  container.innerHTML = '';
+  allBadges.forEach(badge => {
+    const div = document.createElement("div");
+    div.id = "badge-" + badge.id;
+    div.className = "badge-tile";
+    div.style = "background:#1e1e1e;padding:1rem;border-radius:10px;text-align:center;cursor:pointer;";
+    div.innerHTML = `<div style="font-size:2rem;">${badge.icon}</div><strong>${badge.title}</strong>`;
+    div.addEventListener("click", () => {
+      document.getElementById("badge-hint").textContent = "🔍 Hint: " + badge.hint;
+    });
+    container.appendChild(div);
+  });
+
+  document.getElementById("achievements-full").style.display = "flex";
+  document.getElementById("home-screen").style.display = "none";
+}
+
+
+function closeAchievements() {
+  document.getElementById('home-screen').style.display = 'flex';
+  document.getElementById("achievements-full").style.display = "none";
+}
+
+
+function unlockBadge(id) {
+  const badge = document.getElementById("badge-" + id);
+  if (badge && badge.style.opacity === "0.4") {
+    badge.style.opacity = "1";
+    alert("🎉 Achievement Unlocked!");
+  }
+}
+
+</script>
+
+<div id="achievements-full" style="
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: #121212;
+  color: white;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  z-index: 10000;
+  overflow-y: auto;
+">
+  <h2>🏆 Achievements</h2>
+  <div id="badge-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; width: 100%; max-width: 800px; margin-top: 1rem;">
+    <!-- Badges will be inserted here -->
+  </div>
+  <p id="badge-hint" style="margin-top: 1rem; font-style: italic; color: #aaa;"></p>
+  <button onclick="closeAchievements()" style="margin-top: 2rem; background: #e91e63;">Close</button>
+</div>
+
+
+<style>
+.no-scroll { overflow: hidden; height: 100vh; }
+</style>
+<script>
+// Load stats from localStorage or initialize
+const stats = JSON.parse(localStorage.getItem("userStats") || JSON.stringify({
+  timePlayed: 0,
+  questionsAttempted: 0,
+  level: 1,
+  badgesUnlocked: 0
+}));
+
+// Track time played in seconds
+setInterval(() => {
+  stats.timePlayed += 1;
+  updateStatsDisplay();
+  localStorage.setItem("userStats", JSON.stringify(stats));
+}, 60000); // every minute
+
+// Increment questions attempted
+function incrementAttempted() {
+  stats.questionsAttempted += 1;
+  updateStatsDisplay();
+  localStorage.setItem("userStats", JSON.stringify(stats));
+}
+
+// Increment correct answers
+
+// Update badge count (should be called when a badge is unlocked)
+function updateBadgeStat() {
+  const unlocked = JSON.parse(localStorage.getItem("unlockedBadges") || "[]");
+  stats.badgesUnlocked = unlocked.length;
+  updateStatsDisplay();
+  localStorage.setItem("userStats", JSON.stringify(stats));
+}
+
+// Update level (simple example based on correct answers)
+function updateLevel() {
+  stats.level = Math.floor(stats.questionsAttempted / 10) + 1;
+}
+
+// Update all stat displays
+function updateStatsDisplay() {
+  document.getElementById("stat-time").textContent = Math.floor(stats.timePlayed) + "m";
+  document.getElementById("stat-attempted").textContent = stats.questionsAttempted;
+  document.getElementById("stat-badges").textContent = stats.badgesUnlocked;
+  document.getElementById("stat-level").textContent = stats.level;
+}
+
+// Hook into existing checkAnswer and generateQuestion
+const origCheckAnswer = checkAnswer;
+checkAnswer = function(subject) {
+  incrementAttempted();
+  let prevCorrect = stats.correctAnswers;
+  origCheckAnswer(subject);
+  // detect if last answer was correct (uses "✅" marker in feedback)
+  const fb = document.getElementById(subject + "-feedback");
+  if (fb && fb.innerHTML.includes("✅")) {    updateLevel();
+  }
+};
+
+window.addEventListener("DOMContentLoaded", () => {
+  updateStatsDisplay();
+  updateBadgeStat();
+});
+</script>
+
+
+<div id="admin-access" style="display:none; text-align:center; margin-top:1rem;"> >
+  <input type="password" id="admin-pass" placeholder="Enter admin password" style="padding:0.5rem; border-radius:5px;" />
+  <button onclick="checkAdminPassword()" style="padding:0.5rem 1rem;">Enter</button>
+</div>
+
+<div id="admin-panel" style="display:none; padding:1rem; background:#222; color:white; margin-top:1rem;">
+  <h3>🛠 Admin Commands</h3>
+  <button onclick="resetStats()">Reset Stats</button>
+  <button onclick="unlockAllBadges()">Unlock All Badges</button>
+  <button onclick="setLevel(10)">Set Level to 10</button>
+  <button onclick="clearNotes()">Clear Notes</button>
+</div>
+
+</body>
+
+<style>
+.no-scroll { overflow: hidden; height: 100vh; }
+</style>
+<script>
+function enterApp() {
+  document.body.classList.remove("no-scroll");
+  document.getElementById("home-screen").style.display = "none";
+}
+function openCredits() {
+  const box = document.getElementById("credits-box");
+  box.style.display = box.style.display === "none" ? "block" : "none";
+}
+
+function openSettings() {
+  const box = document.getElementById("settings-box");
+  box.style.display = box.style.display === "none" ? "block" : "none";
+}
+
+function quitApp() {
+  document.body.innerHTML = "<h2 style='color:white; text-align:center; margin-top:50vh;'>App Closed</h2>";
+}
+function goHome() {
+  document.body.classList.add("no-scroll");
+  document.getElementById("home-screen").style.display = "flex";
+}
+
+// Font size control
+document.getElementById("fontSizeSelector").addEventListener("change", e => {
+  const value = e.target.value;
+  document.body.style.fontSize = value === "normal" ? "1rem" : value === "large" ? "1.25rem" : "1.5rem";
+});
+
+// Reset all notes
+function resetAllNotes() {
+  localStorage.removeItem("physicsNotes");
+  localStorage.removeItem("bioNotes");
+  document.getElementById("physicsNotes").value = "";
+  document.getElementById("bioNotes").value = "";
+  alert("All notes have been reset.");
+}
+
+// Placeholder toggle for spaced repetition mode (future logic can use this flag)
+document.getElementById("spacedModeToggle").addEventListener("change", e => {
+  const enabled = e.target.checked;
+  localStorage.setItem("spacedRepetition", enabled);
+});
+
+
+
+function openFullAchievements() {
+  const container = document.getElementById("badge-grid");
+  if (!container) return;
+
+  container.innerHTML = '';
+  allBadges.forEach(badge => {
+    const div = document.createElement("div");
+    div.id = "badge-" + badge.id;
+    div.className = "badge-tile";
+    div.style = "background:#1e1e1e;padding:1rem;border-radius:10px;text-align:center;cursor:pointer;";
+    div.innerHTML = `<div style="font-size:2rem;">${badge.icon}</div><strong>${badge.title}</strong>`;
+    div.addEventListener("click", () => {
+      document.getElementById("badge-hint").textContent = "🔍 Hint: " + badge.hint;
+    });
+    container.appendChild(div);
+  });
+
+  document.getElementById("achievements-full").style.display = "flex";
+  document.getElementById("home-screen").style.display = "none";
+}
+
+
+function closeAchievements() {
+  document.getElementById('home-screen').style.display = 'flex';
+  document.getElementById("achievements-full").style.display = "none";
+}
+
+
+function unlockBadge(id) {
+  const badge = document.getElementById("badge-" + id);
+  if (badge && badge.style.opacity === "0.4") {
+    badge.style.opacity = "1";
+    alert("🎉 Achievement Unlocked!");
+  }
+}
+
+</script>
+
+<style>
+.no-scroll { overflow: hidden; height: 100vh; }
+</style>
+<script>
+const allBadges = [
+  { id: "first", icon: "🧪", title: "Science Starter", hint: "Answer your first question" },
+  { id: "notes", icon: "✏️", title: "Note Taker", hint: "Write your first note" },
+  { id: "color", icon: "🌈", title: "Customizer", hint: "Change your background color" },
+  { id: "streak5", icon: "🔥", title: "5 in a Row", hint: "Get 5 questions right in a row" },
+  { id: "accurate", icon: "🎯", title: "Accuracy Master", hint: "Reach 80% answer accuracy" },
+  { id: "reset", icon: "♻️", title: "Fresh Start", hint: "Use Reset All Notes" },
+  { id: "timer", icon: "⏱️", title: "Focused", hint: "Study for 25 minutes in one session" },
+  { id: "quote", icon: "💡", title: "Brain Food", hint: "Read a study quote on the home screen" },
+  { id: "review", icon: "🔁", title: "Revisit", hint: "Retry a previously incorrect problem" },
+  { id: "multi", icon: "🧬", title: "Biologist", hint: "Answer 10 biology questions" },
+  { id: "nightowl", icon: "🌙", title: "Night Owl", hint: "Use the app after 10 PM" },
+  { id: "earlybird", icon: "🌅", title: "Early Bird", hint: "Use the app before 7 AM" },
+  { id: "chemist", icon: "⚗️", title: "Chemist", hint: "Use the chemistry tab (if enabled)" },
+  { id: "persistent", icon: "💪", title: "Persistent", hint: "Use the app 5 days in a row" },
+  { id: "explorer", icon: "🧭", title: "Explorer", hint: "Visit every tab" },
+  { id: "listener", icon: "🎧", title: "Listener", hint: "Use audio feedback (if supported)" },
+  { id: "sharer", icon: "📤", title: "Sharer", hint: "Share the app with a friend" },
+  { id: "zenmode", icon: "🧘", title: "Zen Mode", hint: "Focus for 30 uninterrupted minutes" },
+  { id: "collector", icon: "📚", title: "Collector", hint: "Unlock 10 badges" },
+  { id: "theorist", icon: "📐", title: "Theorist", hint: "Read all formula sheets" }
+];
+
+function openAchievements() {
+  const container = document.getElementById("badge-grid");
+  if (!container) return;
+
+  container.innerHTML = '';
+  allBadges.forEach(badge => {
+    const div = document.createElement("div");
+    div.id = "badge-" + badge.id;
+    div.className = "badge-tile";
+    div.style = "background:#1e1e1e;padding:1rem;border-radius:10px;text-align:center;cursor:pointer;";
+    div.innerHTML = `<div style="font-size:2rem;">${badge.icon}</div><strong>${badge.title}</strong>`;
+    div.addEventListener("click", () => {
+      document.getElementById("badge-hint").textContent = "🔍 Hint: " + badge.hint;
+    });
+    container.appendChild(div);
+  });
+
+  document.getElementById("achievements-full").style.display = "flex";
+  document.getElementById("home-screen").style.display = "none";
+}
+
+function closeAchievements() {
+  document.getElementById('home-screen').style.display = 'flex';
+  document.getElementById("achievements-full").style.display = "none";
+}
+</script>
+
+
+<style>
+.no-scroll { overflow: hidden; height: 100vh; }
+</style>
+<script>
+function checkAdminPassword() {
+  const input = document.getElementById("admin-pass").value;
+  const correctPassword = "studylab42";
+
+  if (input === correctPassword) {
+    document.getElementById("admin-panel").style.display = "block";
+    document.getElementById("admin-access").style.display = "none";
+    alert("✅ Access granted!");
+  } else {
+    alert("❌ Incorrect password");
+  }
+}
+
+function resetStats() {
+  localStorage.removeItem("userStats");
+  location.reload();
+}
+
+function unlockAllBadges() {
+  allBadges.forEach(badge => {
+    const el = document.getElementById("badge-" + badge.id);
+    if (el) el.style.opacity = "1";
+  });
+  localStorage.setItem("unlockedBadges", JSON.stringify(allBadges.map(b => b.id)));
+  alert("🎉 All badges unlocked!");
+}
+
+function setLevel(level) {
+  const stats = JSON.parse(localStorage.getItem("userStats") || "{}");
+  stats.level = level;
+  localStorage.setItem("userStats", JSON.stringify(stats));
+  alert("✅ Level set to " + level);
+  location.reload();
+}
+
+function clearNotes() {
+  localStorage.removeItem("physicsNotes");
+  localStorage.removeItem("bioNotes");
+  alert("🧽 Notes cleared");
+}
+</script>
+
+
+<style>
+.no-scroll { overflow: hidden; height: 100vh; }
+</style>
+<script>
+// Unique device access control
+const authorizedID = "my-secret-id-123";
+const currentID = localStorage.getItem("deviceID");
+if (currentID === authorizedID) {
+  document.getElementById("admin-access").style.display = "block";
+}
+// You can manually enable it once in your browser by running: enableAdmin();
+function enableAdmin() {
+  localStorage.setItem("deviceID", authorizedID);
+}
+
+function checkAdminPassword() {
+  const input = document.getElementById("admin-pass").value;
+  const correctPassword = "studylab42";
+  if (input === correctPassword) {
+    document.getElementById("admin-panel").style.display = "block";
+    document.getElementById("admin-access").style.display = "none";
+    alert("✅ Access granted!");
+  } else {
+    alert("❌ Incorrect password");
+  }
+}
+function resetStats() {
+  localStorage.removeItem("userStats");
+  location.reload();
+}
+function unlockAllBadges() {
+  allBadges.forEach(badge => {
+    const el = document.getElementById("badge-" + badge.id);
+    if (el) el.style.opacity = "1";
+  });
+  localStorage.setItem("unlockedBadges", JSON.stringify(allBadges.map(b => b.id)));
+  alert("🎉 All badges unlocked!");
+}
+function setLevel(level) {
+  const stats = JSON.parse(localStorage.getItem("userStats") || "{}");
+  stats.level = level;
+  localStorage.setItem("userStats", JSON.stringify(stats));
+  alert("✅ Level set to " + level);
+  location.reload();
+}
+function clearNotes() {
+  localStorage.removeItem("physicsNotes");
+  localStorage.removeItem("bioNotes");
+  alert("🧽 Notes cleared");
+}
+</script>
+
+
+<style>
+.no-scroll { overflow: hidden; height: 100vh; }
+</style>
+<script>
+let ghostLog = JSON.parse(localStorage.getItem("ghostLog") || "[]");
+
+// Call this function wherever a question is answered
+function logGhostData(questionText, userAnswer, correct, timeTaken) {
+  ghostLog.push({
+    question: questionText,
+    yourAnswer: userAnswer,
+    correct: correct,
+    time: timeTaken.toFixed(2)
+  });
+  localStorage.setItem("ghostLog", JSON.stringify(ghostLog));
+}
+
+// Ghost challenge mode
+function startGhostChallenge() {
+  const ghostData = JSON.parse(localStorage.getItem("ghostLog") || "[]");
+  if (ghostData.length === 0) {
+    alert("No ghost data available. Play some questions first!");
+    return;
+  }
+
+  let index = 0;
+  let correctCount = 0;
+  let startTime = 0;
+
+  const challengeBox = document.createElement("div");
+  challengeBox.style.position = "fixed";
+  challengeBox.style.top = "0";
+  challengeBox.style.left = "0";
+  challengeBox.style.width = "100%";
+  challengeBox.style.height = "100%";
+  challengeBox.style.background = "#121212";
+  challengeBox.style.zIndex = "10000";
+  challengeBox.style.color = "white";
+  challengeBox.style.padding = "2rem";
+  challengeBox.style.overflow = "auto";
+
+  function loadNext() {
+    if (index >= ghostData.length) {
+      challengeBox.innerHTML = "<h2>🎯 Ghost Challenge Complete</h2><p>You beat your ghost on " + correctCount + " out of " + ghostData.length + " problems!</p><button onclick='document.body.removeChild(this.parentElement)'>Close</button>";
+      return;
+    }
+
+    const q = ghostData[index];
+    challengeBox.innerHTML = `
+      <h2>Question ${index + 1}</h2>
+      <p>${q.question}</p>
+      <input id="ghost-answer" placeholder="Your answer..." style="padding:0.5rem; width:100%; margin:1rem 0;" />
+      <button onclick="submitGhostAnswer()">Submit</button>
+    `;
+    startTime = performance.now();
+  }
+
+  window.submitGhostAnswer = function() {
+    const ans = document.getElementById("ghost-answer").value.trim();
+    const timeTaken = (performance.now() - startTime) / 1000;
+    const q = ghostData[index];
+
+    let feedback = `<p>👻 Your past answer: <strong>${q.yourAnswer}</strong> in ${q.time}s (${q.correct ? "✔️" : "❌"})</p>`;
+    if (ans === q.yourAnswer && q.correct) {
+      feedback += "<p>✅ You matched your ghost!</p>";
+      correctCount++;
+    } else {
+      feedback += "<p>❌ Different or incorrect answer.</p>";
+    }
+
+    challengeBox.innerHTML += feedback;
+    index++;
+    setTimeout(loadNext, 1500);
+  };
+
+  document.body.appendChild(challengeBox);
+  loadNext();
+};
+</script>
+
+</html>
